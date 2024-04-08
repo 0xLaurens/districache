@@ -88,9 +88,60 @@ func (s *Server) handleCommand(conn net.Conn, rawCmd []byte) {
 	cmd, err := command.ParseCmd(rawCmd)
 	if err != nil {
 		log.Printf("parse cmd error (%s)\n", err)
-		_, _ = conn.Write([]byte("invalid syntax"))
+		_, _ = conn.Write([]byte("invalid command syntax"))
 		return
+	}
+	switch cmd.GetType() {
+	case command.CMDGet:
+		if err := s.handleGetCmd(conn, cmd.(command.BaseCMD)); err != nil {
+			return
+		}
+		break
+	case command.CMDSet:
+		if err := s.handleSetCmd(conn, cmd.(command.SetCMD)); err != nil {
+			return
+		}
+		break
+	case command.CMDDelete:
+		if err := s.handleDeleteCmd(conn, cmd.(command.BaseCMD)); err != nil {
+			return
+		}
+		break
 	}
 
 	log.Printf("received cmd (%s)", cmd)
+}
+
+func (s *Server) handleSetCmd(conn net.Conn, cmd command.SetCMD) error {
+	log.Printf("handling set command: %s\n", cmd)
+	err := s.cache.Set(cmd.Key, cmd.Value, cmd.TTL)
+	if err != nil {
+		return err
+	}
+
+	_, _ = conn.Write([]byte("OK"))
+
+	return nil
+}
+
+func (s *Server) handleGetCmd(conn net.Conn, cmd command.BaseCMD) error {
+	log.Printf("handling GET command: %s\n", cmd)
+	res, err := s.cache.Get(cmd.Key)
+	if err != nil {
+		_, _ = conn.Write([]byte("(nil)"))
+		return err
+	}
+	_, _ = conn.Write(res)
+
+	return nil
+}
+
+func (s *Server) handleDeleteCmd(conn net.Conn, cmd command.BaseCMD) error {
+	log.Printf("handling DELETE command: %s\n", cmd)
+	err := s.cache.Delete(cmd.Key)
+	if err != nil {
+		return err
+	}
+	_, _ = conn.Write([]byte("OK"))
+	return nil
 }

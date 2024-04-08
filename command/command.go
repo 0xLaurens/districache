@@ -9,8 +9,7 @@ type CMD string
 const (
 	CMDGet    CMD = "GET"
 	CMDSet    CMD = "SET"
-	CMDHas    CMD = "HAS"
-	CMDDelete CMD = "DELETE"
+	CMDDelete CMD = "DEL"
 )
 
 type Command interface {

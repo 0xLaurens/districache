@@ -21,7 +21,7 @@ func ParseCmd(raw []byte) (Command, error) {
 	}
 
 	switch CMD(parts[0]) {
-	case CMDGet, CMDHas, CMDDelete:
+	case CMDGet, CMDDelete:
 		return base, nil
 	case CMDSet:
 		if len(parts) < 3 || len(parts) > 4 {
