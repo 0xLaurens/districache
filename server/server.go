@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"github.com/0xlaurens/districache/cache"
+	"github.com/0xlaurens/districache/command"
 	"log"
 	"net"
 )
@@ -57,12 +58,39 @@ func (s *Server) Run() error {
 	log.Printf("Server started on (%s:%d)\n", s.host, s.port)
 
 	for {
-		_, err := ln.Accept()
+		conn, err := ln.Accept()
 		if err != nil {
 			log.Printf("Accept error %s\n", err)
 			continue
 		}
+		go s.handleConnection(conn)
+	}
+}
+
+func (s *Server) handleConnection(conn net.Conn) {
+	defer func() {
+		_ = conn.Close()
+	}()
+
+	buf := make([]byte, 2048)
+	for {
+		n, err := conn.Read(buf)
+		if err != nil {
+			log.Printf("conn read error (%s)\n", err)
+			break
+		}
+
+		go s.handleCommand(conn, buf[:n])
+	}
+}
+
+func (s *Server) handleCommand(conn net.Conn, rawCmd []byte) {
+	cmd, err := command.ParseCmd(rawCmd)
+	if err != nil {
+		log.Printf("parse cmd error (%s)\n", err)
+		_, _ = conn.Write([]byte("invalid syntax"))
+		return
 	}
 
-	return nil
+	log.Printf("received cmd (%s)", cmd)
 }
