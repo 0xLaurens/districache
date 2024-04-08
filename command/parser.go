@@ -39,7 +39,7 @@ func ParseCmd(raw []byte) (Command, error) {
 			if err != nil {
 				return nil, invalid
 			}
-			cmd.TTL = time.Duration(ttl)
+			cmd.TTL = time.Millisecond * time.Duration(ttl)
 		}
 
 		return cmd, nil
