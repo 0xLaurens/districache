@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net"
+	"time"
 )
 
 func main() {
@@ -13,9 +14,13 @@ func main() {
 	sendCommand(conn, "GET hello")
 	readResponse(conn)
 
-	sendCommand(conn, "SET hello world 25000")
+	sendCommand(conn, "SET hello world 250")
 	readResponse(conn)
 
+	sendCommand(conn, "GET hello")
+	readResponse(conn)
+
+	time.Sleep(250 * time.Millisecond)
 	sendCommand(conn, "GET hello")
 	readResponse(conn)
 

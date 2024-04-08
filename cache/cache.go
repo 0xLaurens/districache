@@ -39,6 +39,10 @@ func (c *Cache) Set(key []byte, value []byte, ttl time.Duration) error {
 
 	c.data[string(key)] = value
 
+	if ttl != 0 {
+		go c.SetTTL(key, ttl)
+	}
+
 	return nil
 }
 
@@ -58,4 +62,12 @@ func (c *Cache) Delete(key []byte) error {
 	delete(c.data, string(key))
 
 	return nil
+}
+
+func (c *Cache) SetTTL(key []byte, duration time.Duration) {
+	time.AfterFunc(duration, func() {
+		c.lock.Lock()
+		defer c.lock.Unlock()
+		delete(c.data, string(key))
+	})
 }
