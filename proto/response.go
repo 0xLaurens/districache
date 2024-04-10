@@ -57,7 +57,7 @@ func (r *ResponseGet) Bytes() []byte {
 	buf := new(bytes.Buffer)
 
 	_ = binary.Write(buf, binary.LittleEndian, r.Status)
-	_ = binary.Write(buf, binary.LittleEndian, len(r.Value))
+	_ = binary.Write(buf, binary.LittleEndian, int32(len(r.Value)))
 	_ = binary.Write(buf, binary.LittleEndian, r.Value)
 
 	return buf.Bytes()
