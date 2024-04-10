@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"net"
-	"time"
 )
 
 func main() {
@@ -14,13 +13,13 @@ func main() {
 	if err != nil {
 		return
 	}
-	SetCMD(conn, []byte("key"), []byte("value"), 0)
-	resSet, _ := ParseSetResponse(conn)
-	log.Println("", resSet)
 	GetCMD(conn, []byte("key"))
-	resGet, _ := ParseGetResponse(conn)
-	log.Println(resGet)
-	time.Sleep(300 * time.Millisecond)
+	response, err := ParseGetResponse(conn)
+	if err != nil {
+		log.Println("err", err)
+		return
+	}
+	log.Println(response)
 }
 
 func GetCMD(conn net.Conn, key []byte) {
@@ -57,10 +56,9 @@ func DeleteCMD(conn net.Conn, key []byte) {
 	}
 }
 
-func ParseGetResponse(r io.Reader) (proto.ResponseGet, error) {
-	resp := proto.ResponseGet{}
-	if err := binary.Read(r, binary.LittleEndian, resp); err != nil {
-		log.Println("parse error: ", err)
+func ParseGetResponse(r io.Reader) (*proto.ResponseGet, error) {
+	resp := &proto.ResponseGet{}
+	if err := binary.Read(r, binary.LittleEndian, &resp.Status); err != nil {
 		return resp, err
 	}
 
