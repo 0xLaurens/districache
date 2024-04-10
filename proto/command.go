@@ -23,10 +23,10 @@ func (c *CommandSet) Bytes() []byte {
 	buf := new(bytes.Buffer)
 	_ = binary.Write(buf, binary.LittleEndian, CmdSet)
 
-	_ = binary.Write(buf, binary.LittleEndian, len(c.Key))
+	_ = binary.Write(buf, binary.LittleEndian, int32(len(c.Key)))
 	_ = binary.Write(buf, binary.LittleEndian, c.Key)
 
-	_ = binary.Write(buf, binary.LittleEndian, len(c.Value))
+	_ = binary.Write(buf, binary.LittleEndian, int32(len(c.Value)))
 	_ = binary.Write(buf, binary.LittleEndian, c.Value)
 
 	_ = binary.Write(buf, binary.LittleEndian, c.TTL)
@@ -42,7 +42,7 @@ func (c *CommandGet) Bytes() []byte {
 	buf := new(bytes.Buffer)
 	_ = binary.Write(buf, binary.LittleEndian, CmdGet)
 
-	_ = binary.Write(buf, binary.LittleEndian, len(c.Key))
+	_ = binary.Write(buf, binary.LittleEndian, int32(len(c.Key)))
 	_ = binary.Write(buf, binary.LittleEndian, c.Key)
 
 	return buf.Bytes()
@@ -56,7 +56,7 @@ func (c *CommandDelete) Bytes() []byte {
 	buf := new(bytes.Buffer)
 	_ = binary.Write(buf, binary.LittleEndian, CmdDelete)
 
-	_ = binary.Write(buf, binary.LittleEndian, len(c.Key))
+	_ = binary.Write(buf, binary.LittleEndian, int32(len(c.Key)))
 	_ = binary.Write(buf, binary.LittleEndian, c.Key)
 
 	return buf.Bytes()

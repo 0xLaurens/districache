@@ -4,13 +4,11 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
-	"log"
 )
 
 func ParseCommand(r io.Reader) (any, error) {
 	var cmd Command
-	err := binary.Read(r, binary.LittleEndian, &cmd)
-	if err != nil {
+	if err := binary.Read(r, binary.LittleEndian, &cmd); err != nil {
 		return nil, err
 	}
 
@@ -26,9 +24,19 @@ func ParseCommand(r io.Reader) (any, error) {
 	}
 }
 
-func parseGetCommand(r io.Reader) (CommandGet, error) {
-	log.Println("parse get command")
-	cmd := CommandGet{}
+func parseGetCommand(r io.Reader) (*CommandGet, error) {
+	cmd := &CommandGet{}
+
+	var keyLen int32
+	_ = binary.Read(r, binary.LittleEndian, &keyLen)
+	cmd.Key = make([]byte, keyLen)
+	_ = binary.Read(r, binary.LittleEndian, &cmd.Key)
+
+	return cmd, nil
+}
+
+func parseDeleteCommand(r io.Reader) (*CommandDelete, error) {
+	cmd := &CommandDelete{}
 
 	var keyLen int32
 	_ = binary.Read(r, binary.LittleEndian, &keyLen)
@@ -39,22 +47,8 @@ func parseGetCommand(r io.Reader) (CommandGet, error) {
 	return cmd, nil
 }
 
-func parseDeleteCommand(r io.Reader) (CommandDelete, error) {
-	log.Println("parse delete command")
-	cmd := CommandDelete{}
-
-	var keyLen int32
-	_ = binary.Read(r, binary.LittleEndian, &keyLen)
-
-	cmd.Key = make([]byte, keyLen)
-	_ = binary.Read(r, binary.LittleEndian, &cmd.Key)
-
-	return cmd, nil
-}
-
-func parseSetCommand(r io.Reader) (CommandSet, error) {
-	log.Println("parse set command")
-	cmd := CommandSet{}
+func parseSetCommand(r io.Reader) (*CommandSet, error) {
+	cmd := &CommandSet{}
 
 	var keyLen int32
 	_ = binary.Read(r, binary.LittleEndian, &keyLen)
