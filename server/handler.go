@@ -14,8 +14,9 @@ func (s *Server) handleGetCommand(conn net.Conn, cmd *proto.CommandGet) error {
 	val, err := s.cache.Get(cmd.Key)
 	if err != nil {
 		resp.Status = proto.StatusError
+		resp.Value = []byte(err.Error())
 		_, _ = conn.Write(resp.Bytes())
-		return nil
+		return err
 	}
 	resp.Status = proto.StatusOK
 	resp.Value = val
