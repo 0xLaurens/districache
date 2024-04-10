@@ -1,47 +1,60 @@
 # DistriCache
-A proof-of-concept distributed cache system implemented in golang. 
-A redis like system with eventual consistency.
+DistriCache 🌐 is a proof-of-concept distributed in-memory key/value cache implemented implemented using go. It provides several methods for storing, retrieving and deleting values. DistriCache uses a custom byte based communication protocol over TCP.
 
-The consensus of the roles in the cluster will not be implemented for now.
+## Features
+- 📦 Key/Value data storage
+- 🎚️ SET, GET and DEL operations
+- ⏰ Optional TTL for Keys.
+- 🖥️ Leader - Follower model
+- 🤖 Core functions tested
 ## Running
+
 Start the server with the following command
 ```shell
-go run cmd/cache/main.go
+make server
 ```
 
-A testing client can be started using
+Run a test client
 ```shell
-go run cmd/client/main.go
+make client
 ```
 
-## Commands 
-The syntax for the implemented methods
-### GET
+Running test
+```shell
+make test
 ```
+
+Running test + benchmark
+```shell
+make bench
+```
+## Methods
+The methods that are available over TCP
+### SET
+Command for inserting values into the cache
+```TCP
+SET key value [ttl]
+```
+#### Options
+**TTL** - how long a key/value pair is valid before it's deleted. The TTL is specified in milliseconds. _Default value is 0 -> no expiration_
+#### Response
+**OK**, the request was successful
+
+### GET
+Command for retrieving values from the cache
+```TCP
 GET key
 ```
 #### Response
-**value**, the request was successful 
-
+**value**, the request was successful
 **(nil)**, no key found
 
-### SET 
-```
-SET key value [TTL]
-```
-#### options
-**TTL** is an optional parameter for setting the expiration defined in milliseconds
 
-#### response
-**OK**, the request was successful
-
-### DELETE
-delete a key
-```
+## DEL
+Command for deleting values in the cache
+```TCP
 DEL key
 ```
-
-#### response
-**OK**, the request was successful
-
+#### Response
+**OK**, the request was successful.
 
