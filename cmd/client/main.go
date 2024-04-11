@@ -62,7 +62,7 @@ func ParseGetResponse(r io.Reader) (*proto.ResponseGet, error) {
 		return resp, err
 	}
 
-	var valueLen int32
+	var valueLen uint32
 	if err := binary.Read(r, binary.LittleEndian, &valueLen); err != nil {
 		return resp, err
 	}

@@ -27,7 +27,7 @@ func ParseCommand(r io.Reader) (any, error) {
 func parseGetCommand(r io.Reader) (*CommandGet, error) {
 	cmd := &CommandGet{}
 
-	var keyLen int32
+	var keyLen uint32
 	_ = binary.Read(r, binary.LittleEndian, &keyLen)
 	cmd.Key = make([]byte, keyLen)
 	_ = binary.Read(r, binary.LittleEndian, &cmd.Key)
@@ -38,7 +38,7 @@ func parseGetCommand(r io.Reader) (*CommandGet, error) {
 func parseDeleteCommand(r io.Reader) (*CommandDelete, error) {
 	cmd := &CommandDelete{}
 
-	var keyLen int32
+	var keyLen uint32
 	_ = binary.Read(r, binary.LittleEndian, &keyLen)
 
 	cmd.Key = make([]byte, keyLen)
@@ -50,13 +50,13 @@ func parseDeleteCommand(r io.Reader) (*CommandDelete, error) {
 func parseSetCommand(r io.Reader) (*CommandSet, error) {
 	cmd := &CommandSet{}
 
-	var keyLen int32
+	var keyLen uint32
 	_ = binary.Read(r, binary.LittleEndian, &keyLen)
 
 	cmd.Key = make([]byte, keyLen)
 	_ = binary.Read(r, binary.LittleEndian, &cmd.Key)
 
-	var valLen int32
+	var valLen uint32
 	_ = binary.Read(r, binary.LittleEndian, &valLen)
 
 	cmd.Value = make([]byte, valLen)
