@@ -66,13 +66,28 @@ func (l *LogMemStore) DeleteRange(min, max uint64) error {
 	for i := min; i <= max; i++ {
 		delete(l.logs, i)
 	}
-	if min <= l.firstIndex {
-		l.firstIndex = max + 1
+
+	// find the new first and last index
+	if min == l.firstIndex {
+		for i := max; i < l.lastIndex; i++ {
+			if _, ok := l.logs[i]; ok {
+				l.firstIndex = i
+				break
+			}
+		}
 	}
-	if max >= l.lastIndex {
-		l.lastIndex = min - 1
+
+	if max == l.lastIndex {
+		for i := min; i >= l.firstIndex; i-- {
+			if _, ok := l.logs[i]; ok {
+				l.lastIndex = i
+				break
+			}
+		}
 	}
-	if l.firstIndex > l.lastIndex {
+
+	// if there are no logs left reset the first and last index
+	if len(l.logs) == 0 {
 		l.firstIndex = 0
 		l.lastIndex = 0
 	}
